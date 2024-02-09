@@ -5,10 +5,10 @@ class KNNClassifier:
     """
     K-neariest-neighbor classifier using L1 loss
     """
-    
+
     def __init__(self, k=1):
         self.k = k
-    
+
 
     def fit(self, X, y):
         self.train_X = X
@@ -28,14 +28,14 @@ class KNNClassifier:
         predictions, np array of ints (num_samples) - predicted class
            for each sample
         """
-        
+
         if n_loops == 0:
             distances = self.compute_distances_no_loops(X)
         elif n_loops == 1:
             distances = self.compute_distances_one_loops(X)
         else:
             distances = self.compute_distances_two_loops(X)
-        
+
         if len(np.unique(self.train_y)) == 2:
             return self.predict_labels_binary(distances)
         else:
@@ -54,11 +54,14 @@ class KNNClassifier:
         distances, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         """
-        
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+
+        dist = np.zeros((X.shape[0], self.train_X.shape[0]))
+        for test_idx, test_x in enumerate(X):
+            for train_idx, train_x in enumerate(self.train_X):
+                dist[test_idx][train_idx] = np.sum(abs(test_x - train_x))
+
+        return dist
+
 
 
     def compute_distances_one_loop(self, X):
@@ -74,11 +77,7 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        """
-        YOUR CODE IS HERE
-        """
         pass
-
 
     def compute_distances_no_loops(self, X):
         """

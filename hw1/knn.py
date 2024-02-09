@@ -63,7 +63,6 @@ class KNNClassifier:
         return dist
 
 
-
     def compute_distances_one_loop(self, X):
         """
         Computes L1 distance from every sample of X to every training sample
@@ -77,7 +76,12 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        pass
+        dist = np.zeros((X.shape[0], self.train_X.shape[0]))
+        for test_idx, test_x in enumerate(X):
+            dist[test_idx] = np.sum(abs(test_x - self.train_X), axis=1)
+
+        return dist
+
 
     def compute_distances_no_loops(self, X):
         """

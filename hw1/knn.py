@@ -96,16 +96,14 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        dist = np.sum(np.abs(X[:, np.newaxis, :] - self.train_X), axis=2)
+        return dist
 
 
     def predict_labels_binary(self, distances):
         """
         Returns model predictions for binary classification case
-        
+
         Arguments:
         distances, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample

@@ -9,11 +9,9 @@ class KNNClassifier:
     def __init__(self, k=1):
         self.k = k
 
-
     def fit(self, X, y):
         self.train_X = X
         self.train_y = y
-
 
     def predict(self, X, n_loops=0):
         """
@@ -41,7 +39,6 @@ class KNNClassifier:
         else:
             return self.predict_labels_multiclass(distances)
 
-
     def compute_distances_two_loops(self, X):
         """
         Computes L1 distance from every sample of X to every training sample
@@ -62,7 +59,6 @@ class KNNClassifier:
 
         return distances
 
-
     def compute_distances_one_loop(self, X):
         """
         Computes L1 distance from every sample of X to every training sample
@@ -81,7 +77,6 @@ class KNNClassifier:
             distances[test_idx] = np.sum(abs(test_x - self.train_X), axis=1)
         return distances
 
-
     def compute_distances_no_loops(self, X):
         """
         Computes L1 distance from every sample of X to every training sample
@@ -98,7 +93,6 @@ class KNNClassifier:
         distances = np.sum(np.abs(X[:, :, np.newaxis] - self.train_X.T[np.newaxis, :, :]), axis=1)
         return distances
 
-
     def predict_labels_binary(self, distances):
         """
         Returns model predictions for binary classification case
@@ -107,7 +101,7 @@ class KNNClassifier:
         distances, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         Returns:
-        pred, np array of bool (num_test_samples) - binary predictions 
+        pred, np array (num_test_samples) - binary predictions
            for every test sample
         """
 
@@ -127,7 +121,6 @@ class KNNClassifier:
             prediction[test_idx] = most_common_neighbour
         return prediction
 
-
     def predict_labels_multiclass(self, distances):
         """
         Returns model predictions for multi-class classification case
@@ -136,7 +129,7 @@ class KNNClassifier:
         distances, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         Returns:
-        pred, np array of int (num_test_samples) - predicted class index 
+        pred, np array (num_test_samples) - predicted class index
            for every test sample
         """
 

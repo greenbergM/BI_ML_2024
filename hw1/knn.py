@@ -32,7 +32,7 @@ class KNNClassifier:
         if n_loops == 0:
             distances = self.compute_distances_no_loops(X)
         elif n_loops == 1:
-            distances = self.compute_distances_one_loops(X)
+            distances = self.compute_distances_one_loop(X)
         else:
             distances = self.compute_distances_two_loops(X)
 
@@ -55,12 +55,12 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        dist = np.zeros((X.shape[0], self.train_X.shape[0]))
+        distances = np.zeros((X.shape[0], self.train_X.shape[0]))
         for test_idx, test_x in enumerate(X):
             for train_idx, train_x in enumerate(self.train_X):
-                dist[test_idx][train_idx] = np.sum(abs(test_x - train_x))
+                distances[test_idx][train_idx] = np.sum(abs(test_x - train_x))
 
-        return dist
+        return distances
 
 
     def compute_distances_one_loop(self, X):
@@ -76,11 +76,10 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        dist = np.zeros((X.shape[0], self.train_X.shape[0]))
+        distances = np.zeros((X.shape[0], self.train_X.shape[0]))
         for test_idx, test_x in enumerate(X):
-            dist[test_idx] = np.sum(abs(test_x - self.train_X), axis=1)
-
-        return dist
+            distances[test_idx] = np.sum(abs(test_x - self.train_X), axis=1)
+        return distances
 
 
     def compute_distances_no_loops(self, X):
@@ -96,8 +95,8 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        dist = np.sum(np.abs(X[:, np.newaxis, :] - self.train_X), axis=2)
-        return dist
+        distances = np.sum(np.abs(X[:, :, np.newaxis] - self.train_X.T[np.newaxis, :, :]), axis=1)
+        return distances
 
 
     def predict_labels_binary(self, distances):
@@ -112,14 +111,21 @@ class KNNClassifier:
            for every test sample
         """
 
-        n_train = distances.shape[1]
         n_test = distances.shape[0]
-        prediction = np.zeros(n_test)
+        class_dtype = self.train_y.dtype
+        prediction = np.zeros(n_test, dtype=class_dtype)
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        distances_sorted_idx = np.argsort(distances, axis=1)
+
+        for test_idx in range(n_test):
+            neighbours_idx = distances_sorted_idx[test_idx, :self.k]
+
+            neighbours = self.train_y[neighbours_idx]
+            neighbour = np.unique(neighbours, return_counts=True)
+            most_common_neighbour = neighbour[0][np.argmax(neighbour[1])]
+
+            prediction[test_idx] = most_common_neighbour
+        return prediction
 
 
     def predict_labels_multiclass(self, distances):
@@ -134,11 +140,18 @@ class KNNClassifier:
            for every test sample
         """
 
-        n_train = distances.shape[0]
         n_test = distances.shape[0]
-        prediction = np.zeros(n_test, np.int)
+        class_dtype = self.train_y.dtype
+        prediction = np.zeros(n_test, dtype=class_dtype)
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        distances_sorted_idx = np.argsort(distances, axis=1)
+
+        for test_idx in range(n_test):
+            neighbours_idx = distances_sorted_idx[test_idx, :self.k]
+
+            neighbours = self.train_y[neighbours_idx]
+            neighbour = np.unique(neighbours, return_counts=True)
+            most_common_neighbour = neighbour[0][np.argmax(neighbour[1])]
+
+            prediction[test_idx] = most_common_neighbour
+        return prediction
